@@ -13,7 +13,9 @@ export interface KaneResult {
   target?: string;
   steps: KaneStep[];
   failedStep?: KaneStep;
+  /** Kane share_url — the hosted evidence/trace for this run. */
   videoPath?: string;
+  credits?: number;
   durationMs: number;
   /** Full raw stdout. Always kept — this is what lands in evidence/. */
   raw: string;

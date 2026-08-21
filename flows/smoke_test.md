@@ -1,12 +1,19 @@
 ---
 url: http://localhost:3000
-name: kane-loop console smoke
 ---
 
-## Assert the page heading reads "kane-loop"
+## Heading renders
 
-## Type "http://localhost:3000" into the Target URL field
+Assert that the page heading reads "kane-loop".
 
-## Click the Run Verification button
+## Run button is present
 
-## Assert a new row appears in the results table with a verdict
+Assert that the page shows a button labelled "Run Verification".
+
+## Target field accepts input
+
+Type "http://localhost:3000" into the Target URL input field.
+
+## Results table is present
+
+Assert that the results table shows a column heading that reads "Verdict".

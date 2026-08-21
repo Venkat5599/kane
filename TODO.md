@@ -4,13 +4,13 @@ Deadline **21 Aug 23:59 IST**. Tick in order. Do not skip P0.
 
 ## P0 — Eligibility gates (unscoreable without these)
 
-- [ ] Register at https://www.testmuai.com/register/ — claim 10,000 credits
+- [x] Register at https://www.testmuai.com/register/ — claim 10,000 credits
 - [x] `npm install -g @testmuai/kane-cli`
-- [ ] Authenticate Kane CLI (follow its login output)
-- [ ] `kane-cli --help` — **record the real subcommand + JSON/NDJSON flag**
+- [x] Authenticate Kane CLI (follow its login output)
+- [x] `kane-cli --help` — **record the real subcommand + JSON/NDJSON flag**
 - [ ] Read https://www.testmuai.com/kane-cli/agents.md
-- [ ] Patch `src/kane.ts` → `KANE` config block with the verified flags
-- [ ] Run ONE flow green against any URL before touching app code
+- [x] Patch `src/kane.ts` → `KANE` config block with the verified flags
+- [x] Run ONE flow green against any URL before touching app code
 - [ ] Repo pushed public: `git branch -M main && git push -u origin main`
 
 ## P1 — App (primary flow, AC1)
@@ -19,7 +19,7 @@ Deadline **21 Aug 23:59 IST**. Tick in order. Do not skip P0.
 - [x] `app/server.ts` — Bun.serve, `/`, `/api/run`, `/events` SSE
 - [x] `app/index.html` — run form + iteration table, no JS-gated content
 - [x] `src/bus.ts`, `src/types.ts`
-- [ ] `bun run app` → load localhost:3000, submit a check, see a verdict row
+- [x] `bun run app` → load localhost:3000, submit a check, see a verdict row
 
 ## P2 — Loop (closed loop, AC3 — highest weight)
 

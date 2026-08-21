@@ -1,0 +1,18 @@
+{
+  "commit_id": "d9acdc5a-5488-402c-bcdb-f3248514b55d",
+  "test_id": "93807882-fb36-4102-8a9d-3e37fb526f21",
+  "testcase_id": "01M0J8M81XJ7W11ZEMANB1NAV3",
+  "project_id": "01M0J8H9QKS7M35PKNYP8E7C4K",
+  "folder_id": "01M0J8HAQ0SE9K4FVVTVXRB13G",
+  "org_id": "3284331",
+  "session_name": "smoke",
+  "executions": [
+    {
+      "execution_id": "8a87325d-190d-4b87-b037-2cf99234ecdd",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-08-21T13:40:06.011Z"
+    }
+  ]
+}

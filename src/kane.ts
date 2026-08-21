@@ -2,22 +2,18 @@ import { spawn } from 'node:child_process';
 import type { KaneResult, KaneStep, Verdict } from './types.ts';
 
 /**
- * Kane CLI invocation config — VERIFIED against kane-cli 0.8.5.
+ * Kane CLI invocation — VERIFIED against kane-cli 0.8.5.
  *   kane-cli testmd run <file> --agent [--url <url>]
- *   --agent  = plain NDJSON output, no colors/UI
- * Every env var below can override without touching code.
+ *   --agent = plain NDJSON, no colors/UI
+ * Every value is env-overridable; nothing else hardcodes CLI syntax.
  */
 export const KANE = {
   bin: process.env.KANE_BIN ?? 'kane-cli',
-  /** Subcommand that executes a *_test.md flow. */
   runArgs: (process.env.KANE_RUN_ARGS ?? 'testmd run').split(' ').filter(Boolean),
-  /** NDJSON / agent-readable output. */
   jsonFlag: process.env.KANE_JSON_FLAG ?? '--agent',
-  /** Start URL for the first step. */
   targetFlag: process.env.KANE_TARGET_FLAG ?? '--url',
-  /** Extra args appended to every run, e.g. --headless --max-steps 25 */
-  extraArgs: (process.env.KANE_EXTRA_ARGS ?? '').split(' ').filter(Boolean),
-  timeoutMs: Number(process.env.KANE_TIMEOUT_MS ?? 180_000),
+  extraArgs: (process.env.KANE_EXTRA_ARGS ?? '--max-steps 20').split(' ').filter(Boolean),
+  timeoutMs: Number(process.env.KANE_TIMEOUT_MS ?? 300_000),
 };
 
 export function kaneArgs(flowPath: string, target?: string): string[] {
@@ -27,33 +23,35 @@ export function kaneArgs(flowPath: string, target?: string): string[] {
   return args;
 }
 
-/** Tolerant NDJSON reader: unknown shapes are skipped, never fatal. */
-function parseNdjson(raw: string): Record<string, unknown>[] {
-  const out: Record<string, unknown>[] = [];
+interface Ev {
+  type?: string;
+  [k: string]: unknown;
+}
+
+function parseNdjson(raw: string): Ev[] {
+  const out: Ev[] = [];
   for (const line of raw.split(/\r?\n/)) {
     const t = line.trim();
     if (!t.startsWith('{')) continue;
     try {
-      out.push(JSON.parse(t));
+      out.push(JSON.parse(t) as Ev);
     } catch {
-      // Partial or non-JSON line (banner, progress bar) — ignore.
+      // Banner / partial line — ignore, never fatal.
     }
   }
   return out;
 }
 
-function pick(o: Record<string, unknown>, keys: string[]): unknown {
-  for (const k of keys) if (o[k] !== undefined && o[k] !== null) return o[k];
-  return undefined;
-}
-
-const truthy = (v: unknown) =>
-  v === true || v === 'pass' || v === 'PASS' || v === 'passed' || v === 'ok';
-
 /**
- * Maps NDJSON events to a KaneResult without assuming an exact schema.
- * Field-name candidates are deliberately broad so a schema surprise
- * degrades to ERROR-with-raw rather than a crash.
+ * Maps kane-cli 0.8.5 NDJSON to a KaneResult.
+ *
+ * Observed event flow per test.md:
+ *   test_md_step_start { step_index, heading }
+ *     run_start / step_start / step_event / step_end
+ *     run_end { status, summary, one_liner, reason, credits_consumed }
+ *   test_md_step_end   { step_index, status, duration_s }
+ *   test_md_summary    { overall_status, steps{...} }
+ *   test_md_done       { overall_status, share_url }
  */
 export function toResult(
   raw: string,
@@ -65,41 +63,73 @@ export function toResult(
 ): KaneResult {
   const events = parseNdjson(raw);
   const steps: KaneStep[] = [];
-  let videoPath: string | undefined;
-  let declared: Verdict | undefined;
+  const headings = new Map<number, string>();
+  const reasons = new Map<number, string>();
+
+  let overall: string | undefined;
+  let shareUrl: string | undefined;
+  let sessionId: string | undefined;
+  let credits = 0;
+  let current = -1;
 
   for (const e of events) {
-    const type = String(pick(e, ['type', 'event', 'kind']) ?? '');
-    const video = pick(e, ['video', 'videoPath', 'video_path', 'trace', 'recording']);
-    if (typeof video === 'string') videoPath = video;
-
-    if (/step|action|assert/i.test(type)) {
-      const text = pick(e, ['text', 'step', 'name', 'description', 'instruction']);
-      if (typeof text === 'string') {
-        const status = pick(e, ['status', 'result', 'verdict', 'ok', 'passed']);
+    switch (e.type) {
+      case 'test_md_step_start': {
+        current = Number(e.step_index ?? 0);
+        headings.set(current, String(e.heading ?? `Step ${current}`));
+        break;
+      }
+      case 'run_end': {
+        // Carries the human-readable reason for the step that just ran.
+        const reason = String(e.reason || e.summary || e.one_liner || '').trim();
+        if (current >= 0 && reason) reasons.set(current, reason);
+        credits += Number(e.credits_consumed ?? 0);
+        break;
+      }
+      case 'test_md_step_end': {
+        const idx = Number(e.step_index ?? current);
+        const status = String(e.status ?? '');
         steps.push({
           index: steps.length,
-          text,
-          ok: status === undefined ? true : truthy(status),
-          message: (pick(e, ['message', 'error', 'reason']) as string) ?? undefined,
+          text: headings.get(idx) ?? `Step ${idx}`,
+          ok: status === 'passed',
+          message: status === 'passed' ? undefined : reasons.get(idx) || status || 'step did not pass',
         });
+        break;
       }
-    }
-
-    const v = pick(e, ['verdict', 'status', 'result']);
-    if (/run|result|summary|end|complete/i.test(type) && typeof v === 'string') {
-      declared = truthy(v) ? 'PASS' : 'FAIL';
+      case 'test_md_summary':
+        overall = String(e.overall_status ?? '');
+        break;
+      case 'test_md_done':
+        overall = String(e.overall_status ?? overall ?? '');
+        if (typeof e.share_url === 'string') shareUrl = e.share_url;
+        if (typeof e.session_id === 'string') sessionId = e.session_id;
+        break;
     }
   }
 
   const failedStep = steps.find((s) => !s.ok);
   let verdict: Verdict;
-  if (declared) verdict = declared;
+  if (overall === 'passed') verdict = 'PASS';
+  else if (overall === 'failed') verdict = 'FAIL';
   else if (failedStep) verdict = 'FAIL';
-  else if (exitCode === 0 && events.length > 0) verdict = 'PASS';
+  else if (steps.length > 0 && exitCode === 0) verdict = 'PASS';
   else verdict = 'ERROR';
 
-  return { verdict, flow, target, steps, failedStep, videoPath, durationMs, raw, stderr };
+  return {
+    verdict,
+    flow,
+    target,
+    steps,
+    failedStep,
+    // Passing runs are not uploaded, so no share_url — fall back to the
+    // local evidence pack, viewable with `kane-cli evidence serve <session>`.
+    videoPath: shareUrl ?? (sessionId ? `session:${sessionId}` : undefined),
+    credits: Number(credits.toFixed(3)),
+    durationMs,
+    raw,
+    stderr,
+  };
 }
 
 export function runKane(flowPath: string, target?: string): Promise<KaneResult> {
@@ -111,9 +141,7 @@ export function runKane(flowPath: string, target?: string): Promise<KaneResult> 
     try {
       child = spawn(KANE.bin, args, { shell: process.platform === 'win32' });
     } catch (err) {
-      return resolve(
-        toResult('', `spawn failed: ${String(err)}`, -1, flowPath, 0, target),
-      );
+      return resolve(toResult('', `spawn failed: ${String(err)}`, -1, flowPath, 0, target));
     }
 
     let out = '';
