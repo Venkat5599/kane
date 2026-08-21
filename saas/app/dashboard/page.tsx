@@ -18,14 +18,24 @@ const nav = [
   { label: "Flows", href: "/dashboard#flows", active: false },
 ];
 
-function Stat({ label, value, note }: { label: string; value: string; note?: string }): ReactNode {
+function Stat({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+}): ReactNode {
   return (
     <div className="border-border bg-frame rounded-2xl border p-5">
       <p className="text-muted-foreground text-xs">{label}</p>
       <p className="text-foreground mt-2 font-mono text-3xl font-semibold tracking-tight">
         {value}
       </p>
-      {note ? <p className="text-muted-foreground mt-1 text-xs">{note}</p> : null}
+      {note ? (
+        <p className="text-muted-foreground mt-1 text-xs">{note}</p>
+      ) : null}
     </div>
   );
 }
@@ -35,14 +45,20 @@ function VerdictTag({ verdict }: { verdict: string }): ReactNode {
     verdict === "PASS"
       ? "text-emerald-700 dark:text-emerald-400"
       : "text-orange-700 dark:text-orange-400";
-  return <span className={`font-mono text-sm font-bold tracking-wide ${tone}`}>{verdict}</span>;
+  return (
+    <span className={`font-mono text-sm font-bold tracking-wide ${tone}`}>
+      {verdict}
+    </span>
+  );
 }
 
 function RunRow({ run }: { run: Run }): ReactNode {
   const failed = run.steps.filter((s) => !s.ok).length;
   return (
     <tr className="border-border border-t align-top">
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.n}</td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.n}
+      </td>
       <td className="py-4 pr-4">
         <p className="text-foreground text-sm">{run.flow}</p>
         <p className="text-muted-foreground mt-1 text-xs">
@@ -52,8 +68,12 @@ function RunRow({ run }: { run: Run }): ReactNode {
       <td className="py-4 pr-4">
         <VerdictTag verdict={run.verdict} />
       </td>
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.seconds}s</td>
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.credits}</td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.seconds}s
+      </td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.credits}
+      </td>
       <td className="py-4 text-sm">
         {run.shareUrl ? (
           <a
@@ -89,8 +109,13 @@ export default function DashboardPage(): ReactNode {
             <a href="/" className="text-foreground text-lg font-semibold">
               kane-loop
             </a>
-            <p className="text-muted-foreground mt-1 text-xs">verification dashboard</p>
-            <nav className="mt-6 flex gap-2 lg:flex-col" aria-label="Dashboard sections">
+            <p className="text-muted-foreground mt-1 text-xs">
+              verification dashboard
+            </p>
+            <nav
+              className="mt-6 flex gap-2 lg:flex-col"
+              aria-label="Dashboard sections"
+            >
               {nav.map((item) => (
                 <a
                   key={item.label}
@@ -107,8 +132,9 @@ export default function DashboardPage(): ReactNode {
             </nav>
             <div className="border-border mt-6 hidden border-t pt-6 lg:block">
               <p className="text-muted-foreground text-xs leading-relaxed">
-                These are real runs recorded by <code>kane-cli testmd run</code>. Live
-                runs happen in the local console at <code>localhost:3000</code>.
+                These are real runs recorded by <code>kane-cli testmd run</code>
+                . Live runs happen in the local console at{" "}
+                <code>localhost:3000</code>.
               </p>
             </div>
           </div>
@@ -120,15 +146,23 @@ export default function DashboardPage(): ReactNode {
             Overview
           </h1>
           <p className="text-muted-foreground mt-3 max-w-2xl text-base">
-            Every row below came out of a real Kane run against a real browser. The
-            NDJSON and evidence packs are committed in the repo.
+            Every row below came out of a real Kane run against a real browser.
+            The NDJSON and evidence packs are committed in the repo.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat label="Runs" value={String(total)} />
-            <Stat label="Passed" value={`${passed}/${total}`} note="last run green" />
+            <Stat
+              label="Passed"
+              value={`${passed}/${total}`}
+              note="last run green"
+            />
             <Stat label="Steps executed" value={String(steps)} />
-            <Stat label="Credits spent" value={credits.toFixed(1)} note="~5 per step" />
+            <Stat
+              label="Credits spent"
+              value={credits.toFixed(1)}
+              note="~5 per step"
+            />
           </div>
 
           <section id="runs" className="mt-12 scroll-mt-24">
@@ -137,11 +171,11 @@ export default function DashboardPage(): ReactNode {
               <table className="w-full min-w-[640px] border-collapse text-left">
                 <thead>
                   <tr className="text-muted-foreground font-mono text-xs">
-                    <th className="pb-3 pr-4 font-medium">#</th>
-                    <th className="pb-3 pr-4 font-medium">Flow</th>
-                    <th className="pb-3 pr-4 font-medium">Verdict</th>
-                    <th className="pb-3 pr-4 font-medium">Took</th>
-                    <th className="pb-3 pr-4 font-medium">Credits</th>
+                    <th className="pr-4 pb-3 font-medium">#</th>
+                    <th className="pr-4 pb-3 font-medium">Flow</th>
+                    <th className="pr-4 pb-3 font-medium">Verdict</th>
+                    <th className="pr-4 pb-3 font-medium">Took</th>
+                    <th className="pr-4 pb-3 font-medium">Credits</th>
                     <th className="pb-3 font-medium">Evidence</th>
                   </tr>
                 </thead>
@@ -155,7 +189,9 @@ export default function DashboardPage(): ReactNode {
           </section>
 
           <section id="flows" className="mt-12 scroll-mt-24">
-            <h2 className="text-foreground text-xl font-semibold">Steps in the last run</h2>
+            <h2 className="text-foreground text-xl font-semibold">
+              Steps in the last run
+            </h2>
             <ul className="mt-4 flex flex-col gap-2">
               {runs
                 .filter((r) => r.verdict === "PASS")
@@ -176,11 +212,13 @@ export default function DashboardPage(): ReactNode {
           </section>
 
           <section id="evidence" className="mt-12 scroll-mt-24">
-            <h2 className="text-foreground text-xl font-semibold">Run one yourself</h2>
+            <h2 className="text-foreground text-xl font-semibold">
+              Run one yourself
+            </h2>
             <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-relaxed">
-              Live runs drive a real Chrome on your machine, so they happen in the local
-              console rather than here. Clone the repo, start it, and the same table
-              streams in real time.
+              Live runs drive a real Chrome on your machine, so they happen in
+              the local console rather than here. Clone the repo, start it, and
+              the same table streams in real time.
             </p>
             <pre className="border-border bg-frame mt-4 overflow-x-auto rounded-2xl border p-4 font-mono text-xs leading-relaxed">
               <code>{`git clone https://github.com/Venkat5599/kane

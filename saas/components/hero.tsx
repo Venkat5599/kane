@@ -121,8 +121,8 @@ export function Hero(): ReactNode {
             Describe a check in plain English. A real browser runs it and returns pass or fail. When it fails, your coding agent reads the failure and fixes it.
           </motion.p>
 
-          <motion.button
-            type="button"
+          <motion.a
+            href="/dashboard"
             className="group relative cursor-pointer inline-flex items-center max-[850px]:w-full"
             variants={fadeInScale}
             transition={{ duration: 0.8, ease }}
@@ -134,7 +134,7 @@ export function Hero(): ReactNode {
             <span className="relative -left-px z-10 w-11 h-11 rounded-xl flex items-center justify-center text-black">
               <ArrowDownRight className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-45" />
             </span>
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
 
