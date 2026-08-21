@@ -1,0 +1,15 @@
+{
+  "name": "kane-loop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "app": "bun app/server.ts",
+    "loop": "bun loop.ts",
+    "once": "bun loop.ts --once",
+    "dev": "bun app/server.ts & bun loop.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

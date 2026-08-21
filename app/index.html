@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kane-loop</title>
+<style>
+  :root{
+    --ink:#171310; --paper:#f5f1ea; --line:#ddd5c8; --dim:#7d7264;
+    --pass:#2f6b3d; --fail:#a3341f; --err:#8a6d1f; --field:#fffdf9;
+  }
+  :root:not([data-theme=light]){ }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme=light]){
+      --ink:#efe9e0; --paper:#17140f; --line:#332d24; --dim:#9a8e7d;
+      --pass:#7fbf8c; --fail:#e5836c; --err:#d8b656; --field:#1f1a14;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:15px/1.5 ui-sans-serif,system-ui,sans-serif;
+    padding:clamp(24px,5vw,64px);
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  header{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+  h1{font-size:clamp(28px,4vw,44px);margin:0;letter-spacing:-.02em;font-weight:650}
+  .sub{color:var(--dim);max-width:60ch;margin:0 0 40px}
+  form{display:grid;gap:12px;grid-template-columns:1fr;margin-bottom:14px}
+  @media(min-width:760px){ form{grid-template-columns:280px 1fr auto} }
+  label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
+  input{
+    width:100%;padding:11px 13px;background:var(--field);color:var(--ink);
+    border:1px solid var(--line);border-radius:3px;font:inherit;
+  }
+  input:focus{outline:2px solid var(--ink);outline-offset:-1px}
+  .act{display:flex;align-items:flex-end}
+  button{
+    padding:11px 22px;background:var(--ink);color:var(--paper);border:0;
+    border-radius:3px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  button:disabled{opacity:.5;cursor:progress}
+  #note{color:var(--dim);font-size:13px;min-height:20px;margin-bottom:32px}
+  .scroll{overflow-x:auto;border-top:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;min-width:720px}
+  th{
+    text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--dim);font-weight:600;padding:12px 14px 12px 0;
+  }
+  td{padding:14px 14px 14px 0;border-top:1px solid var(--line);vertical-align:top}
+  .n,.dur{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--dim);font-size:13px}
+  .v{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:13px}
+  .PASS{color:var(--pass)} .FAIL{color:var(--fail)} .ERROR{color:var(--err)}
+  .msg{color:var(--dim);font-size:13px;margin-top:4px;max-width:52ch}
+  .patch{color:var(--pass);font-size:13px;margin-top:4px}
+  #empty{color:var(--dim);padding:28px 0;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>kane-loop</h1><span class="n" id="conn">connecting</span></header>
+  <p class="sub">Kane runs on every save. A failure goes back to the coding agent, the
+  agent patches, Kane runs again. Every iteration lands below. Run one by hand here.</p>
+
+  <form id="f">
+    <div>
+      <label for="u">Target URL</label>
+      <input id="u" name="u" value="http://localhost:3000" required>
+    </div>
+    <div>
+      <label for="c">Check, in plain English</label>
+      <input id="c" name="c" required
+             value="Click Run Verification and assert a new result row appears">
+    </div>
+    <div class="act"><button id="b" type="submit">Run Verification</button></div>
+  </form>
+  <div id="note"></div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>Trigger</th><th>Check</th><th>Verdict</th><th>Took</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div id="empty">No runs yet. Submit a check above, or save a file with the loop running.</div>
+</div>
+
+<script>
+  const rows = document.getElementById('rows');
+  const empty = document.getElementById('empty');
+  const note = document.getElementById('note');
+  const conn = document.getElementById('conn');
+  const seen = new Set();
+
+  function esc(s){ return String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+  function addRow(it){
+    const key = it.n + '|' + it.at;
+    if (seen.has(key)) return;
+    seen.add(key);
+    empty.hidden = true;
+    const r = it.result || {};
+    const detail = r.failedStep ? `<div class="msg">${esc(r.failedStep.text)} — ${esc(r.failedStep.message || 'assertion failed')}</div>`
+                 : r.stderr && r.verdict === 'ERROR' ? `<div class="msg">${esc(r.stderr.slice(0,180))}</div>` : '';
+    const patch = it.patchSummary ? `<div class="patch">agent patched · ${esc(it.patchSummary.slice(0,120))}</div>` : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td class="n">${it.n}</td>` +
+      `<td class="n">${esc(it.trigger)}${it.triggerFile ? '<div class="msg">'+esc(it.triggerFile)+'</div>' : ''}</td>` +
+      `<td>${esc(r.flow || '')}${detail}${patch}</td>` +
+      `<td class="v ${esc(r.verdict)}">${esc(r.verdict)}</td>` +
+      `<td class="dur">${r.durationMs != null ? (r.durationMs/1000).toFixed(1)+'s' : ''}</td>`;
+    rows.prepend(tr);
+  }
+
+  const es = new EventSource('/events');
+  es.onopen = () => conn.textContent = 'live';
+  es.onerror = () => conn.textContent = 'reconnecting';
+  es.addEventListener('iteration', e => addRow(JSON.parse(e.data)));
+
+  document.getElementById('f').addEventListener('submit', async e => {
+    e.preventDefault();
+    const b = document.getElementById('b');
+    b.disabled = true; note.textContent = 'Kane is driving a real browser…';
+    try {
+      const res = await fetch('/api/run', {
+        method:'POST', headers:{'content-type':'application/json'},
+        body: JSON.stringify({ targetUrl: u.value, check: c.value })
+      });
+      const data = await res.json();
+      if (data.error) { note.textContent = data.error; }
+      else { addRow(data); note.textContent = 'Done — verdict ' + data.result.verdict; }
+    } catch (err) {
+      note.textContent = 'Run failed: ' + err.message;
+    } finally { b.disabled = false; }
+  });
+</script>
+</body>
+</html>
