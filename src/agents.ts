@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import type { KaneResult } from './types.ts';
 
-export type AgentName = 'claude' | 'codex' | 'manual';
+export type AgentName = 'claude' | 'codex' | 'custom' | 'manual';
 
 export interface RepairOutcome {
   ok: boolean;
@@ -13,14 +13,16 @@ const FAILURE_FILE = '.kane-loop/failure.md';
 
 /** The agent's entire input. Kept as a file so `manual` mode is a paste away. */
 export function writeFailureBrief(r: KaneResult, triggerFile?: string): string {
-  const brief = [
+  // null = omit this line entirely; '' = a real blank line worth keeping.
+  const lines: (string | null)[] = [
     '# Kane verification failed',
     '',
     `- flow: \`${r.flow}\``,
-    r.target ? `- target: ${r.target}` : '',
-    triggerFile ? `- last edited: \`${triggerFile}\`` : '',
+    r.target ? `- target: ${r.target}` : null,
+    triggerFile ? `- last edited: \`${triggerFile}\`` : null,
     `- duration: ${r.durationMs}ms`,
-    r.videoPath ? `- trace: ${r.videoPath}` : '',
+    r.credits ? `- credits spent: ${r.credits}` : null,
+    r.videoPath ? `- trace: ${r.videoPath}` : null,
     '',
     '## Failing step',
     '',
@@ -44,9 +46,8 @@ export function writeFailureBrief(r: KaneResult, triggerFile?: string): string {
     'Fix the application source so this flow passes. Edit files under `app/` or',
     '`src/`. Change nothing in `flows/` — the test defines the contract, and',
     'weakening it to force a pass is not a fix. Make the smallest correct change.',
-  ]
-    .filter(Boolean)
-    .join('\n');
+  ];
+  const brief = lines.filter((l): l is string => l !== null).join('\n');
 
   mkdirSync('.kane-loop', { recursive: true });
   writeFileSync(FAILURE_FILE, brief);
@@ -89,6 +90,17 @@ export function getAgent(name: AgentName) {
   return {
     name,
     async repair(cwd: string): Promise<RepairOutcome> {
+      // KANE_LOOP_AGENT_CMD lets any agent be wired in without a code change,
+      // e.g. KANE_LOOP_AGENT_CMD="aider --message {prompt}"
+      const custom = process.env.KANE_LOOP_AGENT_CMD;
+      if (name === 'custom' || (custom && name !== 'manual')) {
+        if (!custom) return { ok: false, summary: 'KANE_LOOP_AGENT_CMD is not set' };
+        const parts = custom.split(' ').filter(Boolean);
+        const bin = parts[0]!;
+        const rest = parts.slice(1).map((a) => a.replace('{prompt}', PROMPT));
+        return run(bin, rest, cwd);
+      }
+
       switch (name) {
         case 'claude':
           // NOTE: cannot be spawned from inside a Claude Code session —
@@ -96,6 +108,7 @@ export function getAgent(name: AgentName) {
           return run('claude', ['-p', PROMPT], cwd);
         case 'codex':
           return run('codex', ['exec', PROMPT], cwd);
+        case 'custom':
         case 'manual':
           console.log(`\n  Paste this to your agent:\n  > ${PROMPT}\n  (brief: ${FAILURE_FILE})\n`);
           return { ok: false, summary: 'manual mode — awaiting human relay' };

@@ -13,7 +13,7 @@ import { existsSync } from 'node:fs';
 import { publish } from './src/bus.ts';
 import { getAgent, writeFailureBrief, type AgentName } from './src/agents.ts';
 import { runKane } from './src/kane.ts';
-import type { Iteration, Trigger } from './src/types.ts';
+import type { Iteration, Trigger, Verdict } from './src/types.ts';
 
 const argv = process.argv.slice(2);
 const flag = (n: string, d?: string) => {
@@ -22,6 +22,8 @@ const flag = (n: string, d?: string) => {
 };
 
 const ONCE = argv.includes('--once');
+/** --ci: run the full verify→repair→re-verify chain once, then exit 0/1. */
+const CI = argv.includes('--ci');
 const AGENT = (flag('--agent', 'claude') as AgentName);
 const FLOW = flag('--flow', 'flows/smoke_test.md')!;
 const TARGET = flag('--url', 'http://localhost:3000')!;
@@ -37,10 +39,14 @@ function log(msg: string) {
   console.log(`  ${msg}`);
 }
 
-async function verifyAndRepair(trigger: Trigger, triggerFile?: string, depth = 1): Promise<void> {
+async function verifyAndRepair(
+  trigger: Trigger,
+  triggerFile?: string,
+  depth = 1,
+): Promise<Verdict> {
   if (depth > MAX_ITER) {
     log(`BAILED — ${MAX_ITER} iterations without green. Human takes over.`);
-    return;
+    return 'FAIL';
   }
 
   log(`[${depth}/${MAX_ITER}] kane → ${FLOW}${triggerFile ? `  (${triggerFile})` : ''}`);
@@ -57,14 +63,14 @@ async function verifyAndRepair(trigger: Trigger, triggerFile?: string, depth = 1
   if (result.verdict === 'PASS') {
     publish(it);
     log(`PASS in ${(result.durationMs / 1000).toFixed(1)}s`);
-    return;
+    return 'PASS';
   }
 
   if (result.verdict === 'ERROR') {
     publish(it);
     log(`ERROR — ${result.stderr?.split('\n')[0] ?? 'unparseable output'}`);
     log('Not asking the agent to fix an infrastructure error. Check Kane auth and that the app is running.');
-    return;
+    return 'ERROR';
   }
 
   log(`FAIL — ${result.failedStep?.text ?? 'see trace'}`);
@@ -73,7 +79,7 @@ async function verifyAndRepair(trigger: Trigger, triggerFile?: string, depth = 1
   if (ONCE) {
     publish(it);
     log('--once: brief written to .kane-loop/failure.md, not invoking agent.');
-    return;
+    return 'FAIL';
   }
 
   log(`handing failure to ${AGENT}…`);
@@ -85,12 +91,12 @@ async function verifyAndRepair(trigger: Trigger, triggerFile?: string, depth = 1
 
   if (!outcome.ok) {
     log(`agent did not complete — ${outcome.summary}`);
-    return;
+    return 'FAIL';
   }
 
   // The agent's edits normally re-trigger the watcher; verify inline so
   // --once-style and quiet-edit cases still close the loop.
-  await verifyAndRepair('save', triggerFile, depth + 1);
+  return verifyAndRepair('save', triggerFile, depth + 1);
 }
 
 async function schedule(trigger: Trigger, file?: string) {
@@ -119,6 +125,12 @@ if (!existsSync(FLOW)) {
 if (ONCE) {
   await schedule('hook');
   process.exit(0);
+}
+
+if (CI) {
+  const verdict = await verifyAndRepair('boot');
+  log(verdict === 'PASS' ? 'loop closed green' : `loop ended ${verdict}`);
+  process.exit(verdict === 'PASS' ? 0 : 1);
 }
 
 console.log(`kane-loop  flow=${FLOW}  target=${TARGET}  agent=${AGENT}  max=${MAX_ITER}`);
