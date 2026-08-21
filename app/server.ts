@@ -7,15 +7,45 @@ import { runKane } from '../src/kane.ts';
 import type { Iteration } from '../src/types.ts';
 
 const PORT = Number(process.env.PORT ?? 3000);
+// 127.0.0.1 by default. Set HOST=0.0.0.0 only for a deployed instance, and
+// only with the budget guards below configured — /api/run drives a real
+// browser at an arbitrary URL and spends real Kane credits.
+const HOST = process.env.HOST ?? '127.0.0.1';
+const PUBLIC = HOST !== '127.0.0.1';
+
+/** Hard ceiling on credits this process will ever spend. */
+const CREDIT_BUDGET = Number(process.env.KANE_CREDIT_BUDGET ?? (PUBLIC ? 400 : Infinity));
+/** Per-IP runs allowed inside the rolling window. */
+const RATE_LIMIT = Number(process.env.KANE_RATE_LIMIT ?? 3);
+const RATE_WINDOW_MS = Number(process.env.KANE_RATE_WINDOW_MS ?? 15 * 60_000);
+
+let spent = snapshot().reduce((t, i) => t + (i.result.credits ?? 0), 0);
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT) {
+    hits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  hits.set(ip, recent);
+  return false;
+}
+
 let counter = snapshot().length;
 
 /** Writes an ad-hoc NL check to a temp *_test.md — the format Kane's testmd expects. */
 function writeAdHocFlow(check: string, targetUrl: string): string {
   const dir = mkdtempSync(join(tmpdir(), 'kane-loop-'));
   const path = join(dir, 'adhoc_test.md');
+  // kane-cli 0.8.5: `url` is the only valid frontmatter key, and the objective
+  // is the BODY under a `## ` heading — a heading on its own yields an empty
+  // objective and the step fails.
   writeFileSync(
     path,
-    ['---', `url: ${targetUrl}`, 'name: ad-hoc check', '---', '', `## ${check}`, ''].join('\n'),
+    ['---', `url: ${targetUrl}`, '---', '', '## Ad-hoc check', '', check, ''].join('\n'),
   );
   return path;
 }
@@ -31,6 +61,11 @@ const server = Bun.serve({
       return new Response(file('app/index.html'), {
         headers: { 'content-type': 'text/html; charset=utf-8' },
       });
+    }
+
+    // Answer the favicon request so the demo console stays free of 404 noise.
+    if (url.pathname === '/favicon.ico') {
+      return new Response(null, { status: 204 });
     }
 
     if (url.pathname === '/events') {
@@ -65,8 +100,25 @@ const server = Bun.serve({
       if (!targetUrl || !check) {
         return Response.json({ error: 'targetUrl and check are both required' }, { status: 400 });
       }
+      if (!/^https?:\/\//i.test(targetUrl)) {
+        return Response.json({ error: 'targetUrl must start with http:// or https://' }, { status: 400 });
+      }
+      if (spent >= CREDIT_BUDGET) {
+        return Response.json(
+          { error: 'This instance has spent its credit budget. Clone the repo and run it locally.' },
+          { status: 429 },
+        );
+      }
+      const ip = server.requestIP(req)?.address ?? req.headers.get('x-forwarded-for') ?? 'local';
+      if (PUBLIC && rateLimited(ip)) {
+        return Response.json(
+          { error: `Rate limit: ${RATE_LIMIT} runs per ${Math.round(RATE_WINDOW_MS / 60000)} minutes.` },
+          { status: 429 },
+        );
+      }
       const flowPath = writeAdHocFlow(check, targetUrl);
       const result = await runKane(flowPath, targetUrl);
+      spent += result.credits ?? 0;
       const it: Iteration = {
         n: ++counter,
         trigger: 'manual',

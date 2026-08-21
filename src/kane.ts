@@ -19,6 +19,11 @@ export const KANE = {
 export function kaneArgs(flowPath: string, target?: string): string[] {
   const args = [...KANE.runArgs, flowPath, KANE.jsonFlag];
   if (target && KANE.targetFlag) args.push(KANE.targetFlag, target);
+  // Non-interactive auth for headless/hosted use. OAuth needs a browser, so a
+  // container authenticates with basic credentials supplied as env secrets.
+  const user = process.env.KANE_USERNAME;
+  const key = process.env.KANE_ACCESS_KEY;
+  if (user && key) args.push('--username', user, '--access-key', key);
   args.push(...KANE.extraArgs);
   return args;
 }

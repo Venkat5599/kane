@@ -1,0 +1,7 @@
+node_modules
+.git
+.kane-loop
+evidence
+flows/output-*
+.playwright-mcp
+*.png
