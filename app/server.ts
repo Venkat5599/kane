@@ -52,10 +52,21 @@ function writeAdHocFlow(check: string, targetUrl: string): string {
 
 const server = Bun.serve({
   port: PORT,
-  hostname: '127.0.0.1', // local-only: /api/run drives a real browser at a given URL
+  hostname: HOST, // 127.0.0.1 unless HOST is set — see the guards above
   idleTimeout: 255,
   async fetch(req) {
     const url = new URL(req.url);
+
+    // The hosted dashboard talks to this local server from another origin.
+    // Only same-machine instances are reachable anyway (127.0.0.1 by default).
+    const cors: Record<string, string> = {
+      'access-control-allow-origin': '*',
+      'access-control-allow-headers': 'content-type',
+      'access-control-allow-methods': 'GET,POST,OPTIONS',
+    };
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: cors });
+    }
 
     if (url.pathname === '/') {
       return new Response(file('app/index.html'), {
@@ -85,6 +96,7 @@ const server = Bun.serve({
       });
       return new Response(stream, {
         headers: {
+          ...cors,
           'content-type': 'text/event-stream',
           'cache-control': 'no-cache',
           connection: 'keep-alive',
@@ -98,22 +110,22 @@ const server = Bun.serve({
         check?: string;
       };
       if (!targetUrl || !check) {
-        return Response.json({ error: 'targetUrl and check are both required' }, { status: 400 });
+        return Response.json({ error: 'targetUrl and check are both required' }, { status: 400, headers: cors });
       }
       if (!/^https?:\/\//i.test(targetUrl)) {
-        return Response.json({ error: 'targetUrl must start with http:// or https://' }, { status: 400 });
+        return Response.json({ error: 'targetUrl must start with http:// or https://' }, { status: 400, headers: cors });
       }
       if (spent >= CREDIT_BUDGET) {
         return Response.json(
           { error: 'This instance has spent its credit budget. Clone the repo and run it locally.' },
-          { status: 429 },
+          { status: 429, headers: cors },
         );
       }
       const ip = server.requestIP(req)?.address ?? req.headers.get('x-forwarded-for') ?? 'local';
       if (PUBLIC && rateLimited(ip)) {
         return Response.json(
           { error: `Rate limit: ${RATE_LIMIT} runs per ${Math.round(RATE_WINDOW_MS / 60000)} minutes.` },
-          { status: 429 },
+          { status: 429, headers: cors },
         );
       }
       const flowPath = writeAdHocFlow(check, targetUrl);
@@ -126,7 +138,7 @@ const server = Bun.serve({
         at: new Date().toISOString(),
       };
       publish(it);
-      return Response.json(it);
+      return Response.json(it, { headers: cors });
     }
 
     return new Response('not found', { status: 404 });
