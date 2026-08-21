@@ -4,7 +4,7 @@ import { createMetadata } from "@/lib/metadata";
 import runs from "@/lib/runs.json";
 
 export const metadata: Metadata = createMetadata({
-  title: "Evidence — kane-loop",
+  title: "Evidence",
   description: "Evidence packs and traces for every run.",
   path: "/dashboard/evidence",
 });

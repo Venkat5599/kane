@@ -5,7 +5,7 @@ import runs from "@/lib/runs.json";
 import { RunRow } from "@/components/dashboard-parts";
 
 export const metadata: Metadata = createMetadata({
-  title: "Runs — kane-loop",
+  title: "Runs",
   description: "Every recorded Kane run, verdict and trace.",
   path: "/dashboard/runs",
 });

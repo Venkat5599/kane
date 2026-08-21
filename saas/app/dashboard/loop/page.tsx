@@ -4,7 +4,7 @@ import { createMetadata } from "@/lib/metadata";
 import { LiveConsole } from "@/components/live-console";
 
 export const metadata: Metadata = createMetadata({
-  title: "Loop — kane-loop",
+  title: "Loop",
   description: "Live runs and the verify, repair, verify cycle.",
   path: "/dashboard/loop",
 });

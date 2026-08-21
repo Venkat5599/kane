@@ -5,7 +5,7 @@ import runs from "@/lib/runs.json";
 import { StatCard, StepChart } from "@/components/dashboard-parts";
 
 export const metadata: Metadata = createMetadata({
-  title: "Overview — kane-loop",
+  title: "Overview",
   description: "Verification overview: runs, steps, credits.",
   path: "/dashboard",
 });

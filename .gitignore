@@ -11,3 +11,4 @@ saas/tsconfig.tsbuildinfo
 
 # README images
 !docs/*.png
+!saas/public/*.png

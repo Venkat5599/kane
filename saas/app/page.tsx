@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = createMetadata({
   title: "kane-loop — plain-English browser checks for AI-built apps",
-  description: `Welcome to ${siteConfig.name}. ${siteConfig.description}`,
+  description: siteConfig.description,
   path: "/",
 });
 

@@ -1,25 +1,25 @@
 import type { Metadata } from "next";
 
 export const siteConfig = {
-  name: "React Bits Pro - SaaS Template",
+  name: "kane-loop",
   description:
-    "A modern, accessible landing page template built with Next.js, Tailwind CSS, and TypeScript.",
-  url: "https://example.com",
+    "Describe a check in plain English. A real browser runs it and returns pass or fail. When it fails, your coding agent reads the failure and fixes it — then Kane runs again.",
+  url: "https://kane-loop.vercel.app",
   ogImage: "/og-image.png",
-  creator: "@yourhandle",
+  creator: "@Archuser__",
   authors: [
     {
-      name: "Your Name",
-      url: "https://example.com",
+      name: "Venkata Ramana Komari",
+      url: "https://github.com/Venkat5599",
     },
   ],
   keywords: [
-    "landing page",
-    "template",
-    "Next.js",
-    "React",
-    "Tailwind CSS",
-    "TypeScript",
+    "Kane CLI",
+    "browser testing",
+    "AI coding agents",
+    "end-to-end testing",
+    "Claude Code",
+    "TestMu AI",
   ],
 } as const;
 
@@ -58,8 +58,8 @@ export const baseMetadata: Metadata = {
     images: [
       {
         url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
+        width: 1440,
+        height: 900,
         alt: siteConfig.name,
       },
     ],
@@ -72,9 +72,9 @@ export const baseMetadata: Metadata = {
     creator: siteConfig.creator,
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-icon.png",
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
   manifest: "/site.webmanifest",
 };
