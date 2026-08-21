@@ -1,5 +1,7 @@
 # kane-loop
 
+**Live:** https://kane-loop.vercel.app
+
 **Build it with any agent. Verify it with Kane. Let the agent read the verdict.**
 
 A local dev-loop daemon: Kane CLI runs against your app on every save, and when a
