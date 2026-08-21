@@ -8,3 +8,6 @@ saas/tsconfig.tsbuildinfo
 .playwright-mcp/
 .testmuai/
 *.png
+
+# README images
+!docs/*.png
