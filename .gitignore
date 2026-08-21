@@ -1,0 +1,4 @@
+.kane-loop/
+node_modules/
+*.log
+!evidence/
