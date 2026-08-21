@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Play, Radio } from "lucide-react";
 
 type Step = { text: string; ok: boolean; message?: string };
@@ -42,10 +48,14 @@ function verdictTone(v: string): string {
 
 export function LiveConsole(): ReactNode {
   const [base, setBase] = useState(DEFAULT_BASE);
-  const [status, setStatus] = useState<"offline" | "live" | "connecting">("connecting");
+  const [status, setStatus] = useState<"offline" | "live" | "connecting">(
+    "connecting"
+  );
   const [rows, setRows] = useState<Iteration[]>([]);
   const [target, setTarget] = useState("https://example.com");
-  const [check, setCheck] = useState("Assert that the page heading reads Example Domain");
+  const [check, setCheck] = useState(
+    "Assert that the page heading reads Example Domain"
+  );
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
   const esRef = useRef<EventSource | null>(null);
@@ -66,7 +76,9 @@ export function LiveConsole(): ReactNode {
         try {
           const it = JSON.parse((e as MessageEvent).data) as Iteration;
           setRows((prev) =>
-            prev.some((p) => p.n === it.n && p.at === it.at) ? prev : [it, ...prev],
+            prev.some((p) => p.n === it.n && p.at === it.at)
+              ? prev
+              : [it, ...prev]
           );
         } catch {
           /* ignore malformed frame */
@@ -109,12 +121,12 @@ export function LiveConsole(): ReactNode {
         setRows((prev) => [data as Iteration, ...prev]);
         setNote(
           `verdict ${data.result.verdict}` +
-            (data.result.credits ? ` · ${data.result.credits} credits` : ""),
+            (data.result.credits ? ` · ${data.result.credits} credits` : "")
         );
       }
     } catch {
       setNote(
-        `Could not reach ${base}. Start it with: bun run app — the browser runs on your machine, not on this page.`,
+        `Could not reach ${base}. Start it with: bun run app — the browser runs on your machine, not on this page.`
       );
       setStatus("offline");
     } finally {
@@ -138,20 +150,29 @@ export function LiveConsole(): ReactNode {
         <div>
           <h2 className="text-foreground text-lg font-semibold">Run a check</h2>
           <p className="text-muted-foreground mt-1 max-w-xl text-sm leading-relaxed">
-            This page talks to the kane-loop server on your machine. Start it with{" "}
-            <code>bun run app</code>, then point it at any URL and describe the check in
-            plain English.
+            This page talks to the kane-loop server on your machine. Start it
+            with <code>bun run app</code>, then point it at any URL and describe
+            the check in plain English.
           </p>
         </div>
         <span className="border-border text-muted-foreground inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 font-mono text-xs">
-          <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden="true" />
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${dot}`}
+            aria-hidden="true"
+          />
           {status}
         </span>
       </div>
 
-      <form onSubmit={run} className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]">
+      <form
+        onSubmit={run}
+        className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
+      >
         <div>
-          <label htmlFor="target" className="text-muted-foreground mb-1.5 block text-xs">
+          <label
+            htmlFor="target"
+            className="text-muted-foreground mb-1.5 block text-xs"
+          >
             Target URL
           </label>
           <input
@@ -160,11 +181,14 @@ export function LiveConsole(): ReactNode {
             onChange={(e) => setTarget(e.target.value)}
             required
             spellCheck={false}
-            className="border-border bg-background text-foreground focus:border-foreground w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors"
+            className="border-border bg-background text-foreground focus:border-foreground w-full rounded-lg border px-3 py-2.5 text-sm transition-colors outline-none"
           />
         </div>
         <div>
-          <label htmlFor="check" className="text-muted-foreground mb-1.5 block text-xs">
+          <label
+            htmlFor="check"
+            className="text-muted-foreground mb-1.5 block text-xs"
+          >
             Check, in plain English
           </label>
           <input
@@ -173,7 +197,7 @@ export function LiveConsole(): ReactNode {
             onChange={(e) => setCheck(e.target.value)}
             required
             spellCheck={false}
-            className="border-border bg-background text-foreground focus:border-foreground w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors"
+            className="border-border bg-background text-foreground focus:border-foreground w-full rounded-lg border px-3 py-2.5 text-sm transition-colors outline-none"
           />
         </div>
         <div className="flex items-end">
@@ -182,15 +206,26 @@ export function LiveConsole(): ReactNode {
             disabled={busy}
             className="bg-foreground text-background hover:bg-foreground/90 inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-progress disabled:opacity-50 lg:w-auto"
           >
-            <Play className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
+            <Play
+              className="h-3.5 w-3.5"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            />
             Run Verification
           </button>
         </div>
       </form>
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <label htmlFor="base" className="text-muted-foreground inline-flex items-center gap-1.5 text-xs">
-          <Radio className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" />
+        <label
+          htmlFor="base"
+          className="text-muted-foreground inline-flex items-center gap-1.5 text-xs"
+        >
+          <Radio
+            className="h-3.5 w-3.5"
+            strokeWidth={1.75}
+            aria-hidden="true"
+          />
           Server
         </label>
         <input
@@ -200,7 +235,9 @@ export function LiveConsole(): ReactNode {
           spellCheck={false}
           className="border-border bg-background text-muted-foreground focus:border-foreground w-56 rounded-lg border px-2.5 py-1.5 font-mono text-xs outline-none"
         />
-        {note ? <p className="text-muted-foreground font-mono text-xs">{note}</p> : null}
+        {note ? (
+          <p className="text-muted-foreground font-mono text-xs">{note}</p>
+        ) : null}
       </div>
 
       {rows.length > 0 ? (
@@ -217,8 +254,13 @@ export function LiveConsole(): ReactNode {
             </thead>
             <tbody>
               {rows.map((it) => (
-                <tr key={`${it.n}-${it.at}`} className="border-border border-t align-top">
-                  <td className="text-muted-foreground py-3 pr-4 font-mono text-sm">{it.n}</td>
+                <tr
+                  key={`${it.n}-${it.at}`}
+                  className="border-border border-t align-top"
+                >
+                  <td className="text-muted-foreground py-3 pr-4 font-mono text-sm">
+                    {it.n}
+                  </td>
                   <td className="text-muted-foreground py-3 pr-4 font-mono text-xs">
                     {it.trigger}
                     {it.triggerFile ? (
@@ -235,11 +277,14 @@ export function LiveConsole(): ReactNode {
                     ) : null}
                     {it.patchSummary ? (
                       <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-400">
-                        {it.agent ?? "agent"} patched · {it.patchSummary.slice(0, 90)}
+                        {it.agent ?? "agent"} patched ·{" "}
+                        {it.patchSummary.slice(0, 90)}
                       </p>
                     ) : null}
                   </td>
-                  <td className={`py-3 pr-4 font-mono text-sm font-bold ${verdictTone(it.result.verdict)}`}>
+                  <td
+                    className={`py-3 pr-4 font-mono text-sm font-bold ${verdictTone(it.result.verdict)}`}
+                  >
                     {it.result.verdict}
                   </td>
                   <td className="text-muted-foreground py-3 font-mono text-sm">
@@ -254,8 +299,9 @@ export function LiveConsole(): ReactNode {
         </div>
       ) : (
         <p className="text-muted-foreground border-border mt-6 border-t pt-4 text-sm">
-          No live runs yet. Runs appear here the moment your local server executes one —
-          whether you start it from this form or the watcher fires it on a file save.
+          No live runs yet. Runs appear here the moment your local server
+          executes one — whether you start it from this form or the watcher
+          fires it on a file save.
         </p>
       )}
     </section>

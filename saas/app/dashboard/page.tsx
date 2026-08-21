@@ -27,7 +27,12 @@ export const metadata: Metadata = createMetadata({
 type Run = (typeof runs)[number];
 
 const navHome = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", active: true },
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+    active: true,
+  },
   { label: "Loop", icon: RefreshCw, href: "#loop", active: false },
   { label: "Runs", icon: Activity, href: "#runs", active: false },
   { label: "Flows", icon: FolderGit2, href: "#flows", active: false },
@@ -43,7 +48,13 @@ const navEvidence = [
 const lastPass = runs.find((r) => r.verdict === "PASS");
 const lastFail = runs.find((r) => r.verdict === "FAIL");
 
-function Delta({ up, children }: { up: boolean; children: ReactNode }): ReactNode {
+function Delta({
+  up,
+  children,
+}: {
+  up: boolean;
+  children: ReactNode;
+}): ReactNode {
   const Icon = up ? MoveUpRight : MoveDownRight;
   return (
     <span className="border-border text-foreground/70 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium">
@@ -96,10 +107,13 @@ function StepChart({ steps }: { steps: Run["steps"] }): ReactNode {
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const x = (i: number) =>
-    pad.l + (steps.length === 1 ? innerW / 2 : (i * innerW) / (steps.length - 1));
+    pad.l +
+    (steps.length === 1 ? innerW / 2 : (i * innerW) / (steps.length - 1));
   const y = (v: number) => pad.t + innerH - (v / max) * innerH;
 
-  const line = steps.map((s, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(s.seconds)}`).join(" ");
+  const line = steps
+    .map((s, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(s.seconds)}`)
+    .join(" ");
   const area = `${line} L ${x(steps.length - 1)} ${pad.t + innerH} L ${x(0)} ${pad.t + innerH} Z`;
 
   return (
@@ -128,7 +142,13 @@ function StepChart({ steps }: { steps: Run["steps"] }): ReactNode {
           strokeLinejoin="round"
         />
         {steps.map((s, i) => (
-          <circle key={i} cx={x(i)} cy={y(s.seconds)} r="4" fill="currentColor" />
+          <circle
+            key={i}
+            cx={x(i)}
+            cy={y(s.seconds)}
+            r="4"
+            fill="currentColor"
+          />
         ))}
       </g>
       {steps.map((s, i) => (
@@ -136,7 +156,9 @@ function StepChart({ steps }: { steps: Run["steps"] }): ReactNode {
           key={i}
           x={x(i)}
           y={H - 8}
-          textAnchor={i === 0 ? "start" : i === steps.length - 1 ? "end" : "middle"}
+          textAnchor={
+            i === 0 ? "start" : i === steps.length - 1 ? "end" : "middle"
+          }
           className="fill-current text-[13px]"
           style={{ opacity: 0.5 }}
         >
@@ -152,7 +174,9 @@ function RunRow({ run }: { run: Run }): ReactNode {
   const pass = run.verdict === "PASS";
   return (
     <tr className="border-border border-t align-top">
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.n}</td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.n}
+      </td>
       <td className="py-4 pr-4">
         <p className="text-foreground text-sm">{run.flow}</p>
         <p className="text-muted-foreground mt-1 text-xs">
@@ -162,14 +186,20 @@ function RunRow({ run }: { run: Run }): ReactNode {
       <td className="py-4 pr-4">
         <span
           className={`font-mono text-sm font-bold tracking-wide ${
-            pass ? "text-emerald-700 dark:text-emerald-400" : "text-orange-700 dark:text-orange-400"
+            pass
+              ? "text-emerald-700 dark:text-emerald-400"
+              : "text-orange-700 dark:text-orange-400"
           }`}
         >
           {run.verdict}
         </span>
       </td>
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.seconds}s</td>
-      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">{run.credits}</td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.seconds}s
+      </td>
+      <td className="text-muted-foreground py-4 pr-4 font-mono text-sm">
+        {run.credits}
+      </td>
       <td className="py-4 text-sm">
         {run.shareUrl ? (
           <a
@@ -198,8 +228,8 @@ export default function DashboardPage(): ReactNode {
   const passRate = Math.round((passed / total) * 100);
 
   return (
-    <main id="main-content" className="bg-background min-h-screen">
-      <div className="mx-auto flex max-w-[1400px] flex-col lg:flex-row">
+    <main id="main-content" data-dashboard className="bg-background min-h-screen">
+      <div className="flex w-full flex-col lg:flex-row">
         {/* ─── side panel ─────────────────────────────── */}
         <aside className="border-border bg-frame shrink-0 border-b lg:min-h-screen lg:w-64 lg:border-r lg:border-b-0">
           <div className="lg:sticky lg:top-0">
@@ -207,8 +237,13 @@ export default function DashboardPage(): ReactNode {
               href="/"
               className="border-border flex items-center gap-2.5 border-b px-5 py-5"
             >
-              <span className="bg-foreground h-5 w-5 rounded-full" aria-hidden="true" />
-              <span className="text-foreground text-[15px] font-semibold">kane-loop</span>
+              <span
+                className="bg-foreground h-5 w-5 rounded-full"
+                aria-hidden="true"
+              />
+              <span className="text-foreground text-[15px] font-semibold">
+                kane-loop
+              </span>
             </a>
 
             <nav className="px-3 py-4" aria-label="Dashboard">
@@ -224,14 +259,20 @@ export default function DashboardPage(): ReactNode {
                           : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                       }`}
                     >
-                      <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                      <Icon
+                        className="h-4 w-4 shrink-0"
+                        strokeWidth={1.75}
+                        aria-hidden="true"
+                      />
                       {label}
                     </a>
                   </li>
                 ))}
               </ul>
 
-              <p className="text-muted-foreground px-2 pt-6 pb-2 text-xs">Evidence</p>
+              <p className="text-muted-foreground px-2 pt-6 pb-2 text-xs">
+                Evidence
+              </p>
               <ul className="m-0 list-none space-y-0.5 p-0">
                 {navEvidence.map(({ label, icon: Icon, href }) => (
                   <li key={label}>
@@ -239,7 +280,11 @@ export default function DashboardPage(): ReactNode {
                       href={href}
                       className="text-muted-foreground hover:text-foreground hover:bg-foreground/5 flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors"
                     >
-                      <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                      <Icon
+                        className="h-4 w-4 shrink-0"
+                        strokeWidth={1.75}
+                        aria-hidden="true"
+                      />
                       {label}
                     </a>
                   </li>
@@ -249,7 +294,11 @@ export default function DashboardPage(): ReactNode {
                     href="https://github.com/Venkat5599/kane"
                     className="text-muted-foreground hover:text-foreground hover:bg-foreground/5 flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors"
                   >
-                    <MoreHorizontal className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                    <MoreHorizontal
+                      className="h-4 w-4 shrink-0"
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                    />
                     Repository
                   </a>
                 </li>
@@ -261,12 +310,18 @@ export default function DashboardPage(): ReactNode {
         {/* ─── main ───────────────────────────────────── */}
         <div className="min-w-0 flex-1">
           <header className="border-border flex items-center justify-between gap-4 border-b px-5 py-4 sm:px-8">
-            <h1 className="text-foreground text-[15px] font-semibold">Verification</h1>
+            <h1 className="text-foreground text-[15px] font-semibold">
+              Verification
+            </h1>
             <a
               href="https://github.com/Venkat5599/kane#quick-start"
               className="bg-foreground text-background hover:bg-foreground/90 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors"
             >
-              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
+              <Plus
+                className="h-3.5 w-3.5"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              />
               Run a check
             </a>
           </header>
@@ -298,22 +353,27 @@ export default function DashboardPage(): ReactNode {
                 sub="Cached after the first run"
               />
               <StatCard
-                label="Loop iterations"
-                value="2"
-                delta="1 repair"
+                label="Repair attempts"
+                value="4"
+                delta="max"
                 deltaUp
-                headline="Closed without a human"
-                sub="Fail, patch, verify again"
+                headline="Cap before it bails"
+                sub="Fail, agent patches, verify again"
               />
             </div>
 
             <LiveConsole />
 
             {/* chart */}
-            <section id="loop" className="border-border bg-frame mt-6 scroll-mt-6 rounded-2xl border p-5 sm:p-6">
+            <section
+              id="loop"
+              className="border-border bg-frame mt-6 scroll-mt-6 rounded-2xl border p-5 sm:p-6"
+            >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-foreground text-lg font-semibold">Step duration</h2>
+                  <h2 className="text-foreground text-lg font-semibold">
+                    Step duration
+                  </h2>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Each step of the last passing run, in seconds
                   </p>
@@ -327,7 +387,10 @@ export default function DashboardPage(): ReactNode {
               </div>
               <ol className="border-border mt-4 grid list-none gap-2 border-t p-0 pt-4 sm:grid-cols-2">
                 {lastPass?.steps.map((s, i) => (
-                  <li key={i} className="flex items-center justify-between gap-3">
+                  <li
+                    key={i}
+                    className="flex items-center justify-between gap-3"
+                  >
                     <span className="text-foreground truncate text-sm">
                       {i + 1}. {s.text}
                     </span>
@@ -340,7 +403,10 @@ export default function DashboardPage(): ReactNode {
             </section>
 
             {/* runs table */}
-            <section id="runs" className="border-border bg-frame mt-6 scroll-mt-6 rounded-2xl border p-5 sm:p-6">
+            <section
+              id="runs"
+              className="border-border bg-frame mt-6 scroll-mt-6 rounded-2xl border p-5 sm:p-6"
+            >
               <h2 className="text-foreground text-lg font-semibold">Runs</h2>
               <p className="text-muted-foreground mt-1 text-sm">
                 Parsed from the committed NDJSON in <code>evidence/</code>.
@@ -366,8 +432,9 @@ export default function DashboardPage(): ReactNode {
               </div>
               {lastFail ? (
                 <p className="text-muted-foreground mt-4 text-sm">
-                  Run {lastFail.n} is the regression Kane caught during the build — the
-                  failing step is what the coding agent was handed to fix.
+                  Run {lastFail.n} is the regression Kane caught during the
+                  build — the failing step is what the coding agent was handed
+                  to fix.
                 </p>
               ) : null}
             </section>
@@ -377,11 +444,13 @@ export default function DashboardPage(): ReactNode {
               id="evidence"
               className="border-border bg-frame mt-6 scroll-mt-6 rounded-2xl border p-5 sm:p-6"
             >
-              <h2 className="text-foreground text-lg font-semibold">Run one yourself</h2>
+              <h2 className="text-foreground text-lg font-semibold">
+                Run one yourself
+              </h2>
               <p className="text-muted-foreground mt-1 max-w-2xl text-sm leading-relaxed">
-                Live runs drive a real Chrome on your own machine, so they happen in the
-                local console rather than on this page. Clone the repo and the same table
-                streams in real time.
+                Live runs drive a real Chrome on your own machine, so they
+                happen in the local console rather than on this page. Clone the
+                repo and the same table streams in real time.
               </p>
               <pre className="border-border bg-background mt-4 overflow-x-auto rounded-xl border p-4 font-mono text-xs leading-relaxed">
                 <code>{`git clone https://github.com/Venkat5599/kane

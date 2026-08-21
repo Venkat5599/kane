@@ -195,3 +195,15 @@ body {
     display: none;
   }
 }
+
+
+/* Dashboard is a full-bleed app surface: drop the marketing chrome so the
+   side panel sits flush against the viewport edge. */
+body:has([data-dashboard]) .site-frame,
+body:has([data-dashboard]) .site-corner,
+body:has([data-dashboard]) header {
+  display: none !important;
+}
+body:has([data-dashboard]) {
+  padding: 0 !important;
+}
