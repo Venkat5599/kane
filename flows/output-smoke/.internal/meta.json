@@ -8,11 +8,11 @@
   "session_name": "smoke",
   "executions": [
     {
-      "execution_id": "8a87325d-190d-4b87-b037-2cf99234ecdd",
+      "execution_id": "f0c2ce9c-2916-440b-ab59-6a9590452b53",
       "run_kind": "author",
-      "status": "passed",
+      "status": "broken",
       "valid": true,
-      "at": "2026-08-21T13:40:06.011Z"
+      "at": "2026-08-21T17:58:43.193Z"
     }
   ]
 }

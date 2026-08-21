@@ -1,6 +1,5 @@
 "use client";
 
-import { LogoLoop, type LogoItem } from "@/components/logo-loop";
 import { ArrowDownRight } from "lucide-react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import Image from "next/image";
@@ -17,17 +16,6 @@ const fadeInScale = {
   hidden: { opacity: 0, scale: 0.95, filter: "blur(8px)" },
   visible: { opacity: 1, scale: 1, filter: "blur(0px)" },
 };
-
-const logos: LogoItem[] = [
-  { node: <Image src="/mock-logos/acmecorp.svg" alt="Acme Corp" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/altshift.svg" alt="Altshift" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/biosynthesis.svg" alt="Biosynthesis" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/boltshift.svg" alt="Boltshift" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/capsule.svg" alt="Capsule" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/catalog.svg" alt="Catalog" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/cloudwatch.svg" alt="Cloudwatch" width={120} height={32} className="h-[1em] w-auto" /> },
-  { node: <Image src="/mock-logos/commandr.svg" alt="Commandr" width={120} height={32} className="h-[1em] w-auto" /> },
-];
 
 const PARALLAX_INTENSITY = 20;
 
@@ -166,7 +154,6 @@ export function Hero(): ReactNode {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 1, ease }}
       >
-        <LogoLoop logos={logos} speed={60} logoHeight={42} gap={124} />
       </motion.div>
     </section>
   );

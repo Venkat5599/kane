@@ -2,17 +2,9 @@
 
 import { motion, type Transition } from "motion/react";
 import { CircleCheck, Star } from "lucide-react";
-import Image from "next/image";
 import type { ReactNode } from "react";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
-
-const AVATAR_URLS = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-];
 
 const DEPLOYMENT_STATS = [
   { icon: "🚀", label: "2,598 Deploys", change: "+24%" },
@@ -58,30 +50,6 @@ function PhoneMockup({
         aria-hidden="true"
       />
       {children}
-    </div>
-  );
-}
-
-function AvatarStack(): ReactNode {
-  return (
-    <div className="flex items-center">
-      {AVATAR_URLS.map((src, i) => (
-        <div
-          key={i}
-          className="size-12 rounded-full border-2 border-white/25 overflow-hidden -ml-4 first:ml-0"
-        >
-          <Image
-            src={src}
-            alt=""
-            width={48}
-            height={48}
-            className="size-full object-cover"
-          />
-        </div>
-      ))}
-      <div className="size-12 rounded-full border-2 border-white/25 bg-accent text-black flex items-center justify-center text-sm font-semibold -ml-4">
-        5+
-      </div>
     </div>
   );
 }
@@ -261,20 +229,16 @@ function TrustedByCard(): ReactNode {
     >
       <div className="transition-transform duration-500 ease-out group-hover:scale-110">
         <h3 className="text-2xl md:text-3xl font-medium text-card-foreground leading-tight mb-1">
-          Trusted By
+          No selectors.
         </h3>
         <h3 className="text-2xl md:text-3xl font-medium text-card-foreground leading-tight mb-5">
-          254k+ Users
+          No suite to maintain.
         </h3>
       </div>
 
-      <div className="transition-transform duration-500 ease-out group-hover:scale-105">
-        <AvatarStack />
-      </div>
-
-      <div className="flex items-center gap-2 mt-5 text-card-foreground-muted transition-transform duration-500 ease-out group-hover:scale-105">
+      <div className="flex items-center gap-2 mt-1 text-card-foreground-muted">
         <Star className="size-4 fill-current" />
-        <span className="text-xs font-medium">4.9 from 48k+ reviews</span>
+        <span className="text-xs font-medium">Plain English in, pass or fail out</span>
       </div>
     </motion.div>
   );
