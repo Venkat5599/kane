@@ -8,7 +8,7 @@ const faqs = [
   {
     question: "Do I need to know Playwright or Selenium?",
     answer:
-      "No. You describe the check the way you'd describe it to a colleague — \"click Run Verification and assert a result row appears\" — and Kane drives a real Chrome to do it. No selectors, no page objects, no framework to set up.",
+      'No. You describe the check the way you\'d describe it to a colleague — "click Run Verification and assert a result row appears" — and Kane drives a real Chrome to do it. No selectors, no page objects, no framework to set up.',
   },
   {
     question: "Which coding agent does it work with?",
@@ -52,7 +52,7 @@ function FAQItem({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, ease, delay: index * 0.05 }}
       onClick={onToggle}
-      className="cursor-pointer rounded-2xl bg-frame p-5 shadow-sm sm:p-6"
+      className="bg-frame cursor-pointer rounded-2xl p-5 shadow-sm sm:p-6"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -64,7 +64,7 @@ function FAQItem({
       aria-expanded={isOpen}
     >
       <div className="flex w-full items-center justify-between gap-4 text-left">
-        <span className="text-base font-medium text-foreground sm:text-lg">
+        <span className="text-foreground text-base font-medium sm:text-lg">
           {faq.question}
         </span>
         <motion.div
@@ -72,7 +72,7 @@ function FAQItem({
           transition={{ duration: 0.3, ease }}
           className="shrink-0"
         >
-          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground h-5 w-5" />
         </motion.div>
       </div>
       <AnimatePresence initial={false}>
@@ -84,7 +84,7 @@ function FAQItem({
             transition={{ duration: 0.3, ease }}
             className="overflow-hidden"
           >
-            <p className="pt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="text-muted-foreground pt-4 text-sm leading-relaxed sm:text-base">
               {faq.answer}
             </p>
           </motion.div>
@@ -111,32 +111,32 @@ export function FAQ(): ReactNode {
           transition={{ duration: 0.6, ease }}
           className="mb-12 text-center sm:mb-16"
         >
-          <span className="text-sm font-medium text-muted-foreground">
+          <span className="text-muted-foreground text-sm font-medium">
             Frequently Asked Questions
           </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h2 className="text-foreground mt-3 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
             Everything you need to know
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Can&apos;t find the answer you&apos;re looking for? Reach out!
+          <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-base sm:text-lg">
+            Still stuck? Open an issue on GitHub.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <motion.a
-              href="#"
+              href="https://github.com/Venkat5599/kane"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center rounded-xl bg-foreground px-6 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
+              className="bg-foreground text-background hover:bg-foreground/90 inline-flex items-center rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors"
             >
-              Get Started
+              View on GitHub
             </motion.a>
             <motion.a
-              href="#"
+              href="https://github.com/Venkat5599/kane/issues"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center rounded-xl border border-border bg-frame px-6 py-2.5 text-sm font-semibold text-foreground transition-colors"
+              className="border-border bg-frame text-foreground inline-flex items-center rounded-xl border px-6 py-2.5 text-sm font-semibold transition-colors"
             >
-              Contact Support
+              Open an issue
             </motion.a>
           </div>
         </motion.div>

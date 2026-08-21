@@ -1,0 +1,54 @@
+[
+  {
+    "n": 2,
+    "flow": "smoke_test.md",
+    "verdict": "FAIL",
+    "steps": [
+      {
+        "text": "Assert the page heading reads \"kane-loop\"",
+        "ok": true,
+        "seconds": 15.7
+      },
+      {
+        "text": "Assert the page shows a button labelled \"Run Verification\"",
+        "ok": false,
+        "seconds": 9.3
+      }
+    ],
+    "seconds": 44,
+    "credits": 0.92,
+    "sessionId": "93f61b1d-1d1b-4f1b-97d0-099a33bb756d",
+    "shareUrl": "https://test-manager.lambdatest.com/projects/01M0J8H9QKS7M35PKNYP8E7C4K/test-cases/01M0J8M81XJ7W11ZEMANB1NAV3/dashboard/share/US_V8HN4J67UPP8UXA5Z02ASXXAD1SOA90M3DNYPDV505GQWNNU0G4EIODNS5JYXJ2W?type=summary&agentView=true&fqdn=summary-page"
+  },
+  {
+    "n": 1,
+    "flow": "smoke_test.md",
+    "verdict": "PASS",
+    "steps": [
+      {
+        "text": "Heading renders",
+        "ok": true,
+        "seconds": 24.7
+      },
+      {
+        "text": "Run button is present",
+        "ok": true,
+        "seconds": 21
+      },
+      {
+        "text": "Target field accepts input",
+        "ok": true,
+        "seconds": 19.3
+      },
+      {
+        "text": "Results table is present",
+        "ok": true,
+        "seconds": 23.2
+      }
+    ],
+    "seconds": 96,
+    "credits": 20.34,
+    "sessionId": "d9acdc5a-5488-402c-bcdb-f3248514b55d",
+    "shareUrl": ""
+  }
+]

@@ -72,7 +72,7 @@ function DesktopDropdown({
           >
             <div className="bg-frame border border-border rounded-2xl shadow-lg overflow-hidden p-2">
               {menus[menuKey].map((item) => (
-                <a key={item.label} href="#" className="block px-4 py-3 rounded-xl hover:bg-muted transition-colors">
+                <a key={item.label} href="https://github.com/Venkat5599/kane" className="block px-4 py-3 rounded-xl hover:bg-muted transition-colors">
                   <div className="text-sm font-medium text-foreground">{item.label}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">{item.description}</div>
                 </a>
@@ -123,7 +123,7 @@ function MobileExpandable({
               {menus[menuKey].map((item) => (
                 <a
                   key={item.label}
-                  href="#"
+                  href="https://github.com/Venkat5599/kane"
                   className="block py-2 text-sm text-foreground/80 hover:text-foreground"
                   onClick={onClose}
                 >
@@ -160,38 +160,36 @@ export function Header(): ReactNode {
       className="fixed shadow-2xl/20 rounded-b-4xl top-2.5 left-1/2 -translate-x-1/2 w-full max-w-5xl max-[1200px]:max-w-2xl bg-frame z-9998 max-[850px]:top-0 max-[850px]:left-0 max-[850px]:right-0 max-[850px]:translate-x-0 max-[850px]:w-full max-[850px]:max-w-none max-[850px]:rounded-none max-[850px]:rounded-b-4xl max-[850px]:overflow-hidden"
     >
       <div className="h-20 max-[850px]:h-18 flex items-center justify-between px-4 max-[850px]:px-6">
-        <a href="#" className="flex items-center gap-2 ml-4 max-[850px]:ml-0">
+        <a href="/" className="flex items-center gap-2 ml-4 max-[850px]:ml-0">
           <div className="w-6 h-6 rounded-full bg-foreground" />
-          <span className="text-lg font-semibold text-foreground leading-0 max-[1200px]:hidden max-[850px]:inline">Circular</span>
+          <span className="text-lg font-semibold text-foreground leading-0 max-[1200px]:hidden max-[850px]:inline">kane-loop</span>
         </a>
 
         <nav className="flex items-center gap-1 max-[1200px]:gap-0 max-[850px]:hidden">
           <DesktopDropdown
-            label="Products"
+            label="How it works"
             menuKey="products"
             isOpen={activeMenu === "products"}
             onOpen={() => setActiveMenu("products")}
             onClose={() => setActiveMenu(null)}
           />
           <DesktopDropdown
-            label="Resources"
+            label="Docs"
             menuKey="resources"
             isOpen={activeMenu === "resources"}
             onOpen={() => setActiveMenu("resources")}
             onClose={() => setActiveMenu(null)}
           />
           <a href="#pricing" className="px-4 py-2 max-[1200px]:px-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-foreground/5">
-            Pricing
+            Credits
           </a>
         </nav>
 
         <div className="flex items-center gap-4 max-[850px]:hidden">
-          <a href="#" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-            Sign in
-          </a>
-          <a href="#" className="group relative inline-flex items-center">
+          <a href="/dashboard" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">Dashboard</a>
+          <a href="https://github.com/Venkat5599/kane" className="group relative inline-flex items-center">
             <span className="absolute right-0 inset-y-0 w-[calc(100%-1.5rem)] rounded-xl bg-accent" />
-            <span className="relative z-10 px-5 py-3 rounded-xl bg-foreground text-background text-sm font-medium">Try for free</span>
+            <span className="relative z-10 px-5 py-3 rounded-xl bg-foreground text-background text-sm font-medium">View on GitHub</span>
             <span className="relative -left-px z-10 w-10 h-10 rounded-xl flex items-center justify-center text-black">
               <ArrowDownRight className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-45" />
             </span>
@@ -219,18 +217,18 @@ export function Header(): ReactNode {
           >
             <div className="px-6 pb-4">
               <nav className="space-y-0">
-                <a href="#" className="flex items-center justify-between py-4 text-base font-medium text-foreground border-b border-foreground/10" onClick={closeMobile}>
+                <a href="https://github.com/Venkat5599/kane" className="flex items-center justify-between py-4 text-base font-medium text-foreground border-b border-foreground/10" onClick={closeMobile}>
                   Customers
                 </a>
                 <MobileExpandable
-                  label="Products"
+                  label="How it works"
                   menuKey="products"
                   isExpanded={mobileExpanded === "products"}
                   onToggle={() => toggleExpanded("products")}
                   onClose={closeMobile}
                 />
                 <MobileExpandable
-                  label="Resources"
+                  label="Docs"
                   menuKey="resources"
                   isExpanded={mobileExpanded === "resources"}
                   onToggle={() => toggleExpanded("resources")}
@@ -242,12 +240,12 @@ export function Header(): ReactNode {
               </nav>
 
               <div className="flex items-center justify-between pt-8 pb-2">
-                <a href="#" className="text-base font-medium text-foreground" onClick={closeMobile}>
+                <a href="https://github.com/Venkat5599/kane" className="text-base font-medium text-foreground" onClick={closeMobile}>
                   Sign in
                 </a>
-                <a href="#" className="group relative inline-flex items-center" onClick={closeMobile}>
+                <a href="https://github.com/Venkat5599/kane" className="group relative inline-flex items-center" onClick={closeMobile}>
                   <span className="absolute right-0 inset-y-0 w-[calc(100%-1.5rem)] rounded-2xl bg-accent" />
-                  <span className="relative z-10 px-5 py-3 rounded-2xl bg-foreground text-background text-sm font-medium">Try for free</span>
+                  <span className="relative z-10 px-5 py-3 rounded-2xl bg-foreground text-background text-sm font-medium">View on GitHub</span>
                   <span className="relative -left-px z-10 w-10 h-10 rounded-2xl flex items-center justify-center text-foreground">
                     <ArrowDownRight className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-45" />
                   </span>

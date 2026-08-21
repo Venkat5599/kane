@@ -92,7 +92,7 @@ export function Hero(): ReactNode {
             variants={fadeInUp}
             transition={{ duration: 0.8, ease }}
           >
-            Now Available
+            Built on Kane CLI
             <span className="text-accent">✦</span>
           </motion.div>
 
@@ -102,14 +102,14 @@ export function Hero(): ReactNode {
               variants={fadeInUp}
               transition={{ duration: 0.8, ease }}
             >
-              Build Faster
+              Your agent writes it.
             </motion.span>
             <motion.span
               className="block"
               variants={fadeInUp}
               transition={{ duration: 0.8, ease }}
             >
-              Ship with <span className="italic font-serif text-accent">Confidence</span>
+              Kane <span className="italic font-serif text-accent">checks it.</span>
             </motion.span>
           </h1>
 
@@ -118,7 +118,7 @@ export function Hero(): ReactNode {
             variants={fadeInUp}
             transition={{ duration: 0.8, ease }}
           >
-            The modern platform for teams who want to move fast without breaking things
+            Describe a check in plain English. A real browser runs it and returns pass or fail. When it fails, your coding agent reads the failure and fixes it.
           </motion.p>
 
           <motion.button
@@ -130,7 +130,7 @@ export function Hero(): ReactNode {
             whileTap={{ scale: 0.98 }}
           >
             <span className="absolute right-0 inset-y-0 w-[calc(100%-2rem)] max-[850px]:w-full rounded-xl bg-accent" />
-            <span className="relative z-10 px-6 py-3 rounded-xl bg-black text-white font-medium max-[850px]:flex-1">Get Started</span>
+            <span className="relative z-10 px-6 py-3 rounded-xl bg-black text-white font-medium max-[850px]:flex-1">See the loop</span>
             <span className="relative -left-px z-10 w-11 h-11 rounded-xl flex items-center justify-center text-black">
               <ArrowDownRight className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-45" />
             </span>
